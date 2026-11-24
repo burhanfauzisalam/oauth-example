@@ -6,6 +6,7 @@ Aplikasi web berbasis **Laravel 13** yang menyediakan autentikasi **hanya melalu
 
 - 🔐 **Login & signup via Google** — satu tombol, tanpa form pendaftaran.
 - 👤 **Pembuatan user otomatis** — akun Google baru langsung dibuatkan user; akun yang sudah terdaftar cukup diambil datanya.
+- 🖼️ **Avatar disimpan lokal** — avatar Google diunduh ke `storage/app/public/avatars` saat login, sehingga tidak terpengaruh rate limit CDN Google (`lh3.googleusercontent.com`).
 - 🖥️ **Halaman dashboard** — menampilkan data akun (nama, email, avatar, tanggal bergabung).
 - 🛡️ **Route terproteksi** — `/dashboard` hanya dapat diakses setelah login.
 - 🚪 **Logout** — menghapus sesi dengan aman.
@@ -70,6 +71,14 @@ php artisan migrate
 ```
 
 Migration akan membuat tabel `users` (dengan kolom `google_id` dan `avatar`) serta tabel pendukung sesi/cache.
+
+### 4. Buat symlink storage
+
+Agar file yang diunggah (termasuk avatar Google) dapat diakses publik:
+
+```bash
+php artisan storage:link
+```
 
 ---
 

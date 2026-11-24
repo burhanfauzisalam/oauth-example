@@ -36,7 +36,7 @@
 
                 <div class="flex items-center gap-4 mb-8">
                     @if (auth()->user()->avatar)
-                        <img src="{{ auth()->user()->avatar }}" alt="{{ auth()->user()->name }}" class="w-16 h-16 rounded-full border border-gray-200 dark:border-[#3E3E3A]">
+                        <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}" class="w-16 h-16 rounded-full border border-gray-200 dark:border-[#3E3E3A]">
                     @else
                         <div class="w-16 h-16 rounded-full bg-gray-200 dark:bg-[#3E3E3A] flex items-center justify-center text-xl font-medium">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}

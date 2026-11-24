@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -78,6 +80,10 @@ class GoogleAuthTest extends TestCase
 
     public function test_google_callback_creates_a_new_user_and_authenticates(): void
     {
+        Http::fake([
+            'lh3.googleusercontent.com/*' => Http::response('fake-image-bytes', 200),
+        ]);
+
         Socialite::fake('google', $this->fakeGoogleUser());
 
         $this->get(route('auth.google.callback'))->assertRedirect(route('dashboard'));
@@ -91,6 +97,10 @@ class GoogleAuthTest extends TestCase
 
         $user = User::where('google_id', 'google-12345')->firstOrFail();
         $this->assertEquals(Auth()->id(), $user->id);
+
+        $this->assertNotNull($user->avatar);
+        $this->assertStringStartsWith('avatars/', $user->avatar);
+        $this->assertTrue(Storage::disk('public')->exists($user->avatar));
     }
 
     public function test_google_callback_uses_existing_user_without_overwriting(): void
@@ -100,6 +110,10 @@ class GoogleAuthTest extends TestCase
             'email' => 'john@example.com',
             'name' => 'Original Name',
             'password' => null,
+        ]);
+
+        Http::fake([
+            'lh3.googleusercontent.com/*' => Http::response('fake-image-bytes', 200),
         ]);
 
         Socialite::fake('google', $this->fakeGoogleUser(['name' => 'New Name']));
